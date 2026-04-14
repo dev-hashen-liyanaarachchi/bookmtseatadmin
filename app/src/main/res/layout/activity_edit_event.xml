@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Title Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Event Title"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UPCOMING"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:padding="4dp"
+                android:background="#E8F5E9"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                app:cornerRadius="4dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvMovie"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Movie Title"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/tvVenue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Venue"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price"
+            android:textSize="14sp"
+            android:textColor="#FF5722"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp" />
+
+        <!-- ← ADD THIS: Edit Button -->
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Edit Event"
+            android:textSize="14sp"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="#2196F3" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

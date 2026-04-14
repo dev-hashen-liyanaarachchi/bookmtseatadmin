@@ -19,6 +19,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Bookmyseatadmin">
         <activity
+            android:name=".activity.EditEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.Event_Edit"
+            android:exported="false" />
+        <activity
             android:name=".activity.LocationPickerActivity"
             android:exported="false" />
         <activity
@@ -55,7 +61,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBeuD0gk0pLe4Qw7LdvUwGw3pILYXZS8I8"/>
+            android:value="AIzaSyBeuD0gk0pLe4Qw7LdvUwGw3pILYXZS8I8" />
     </application>
 
 </manifest>
