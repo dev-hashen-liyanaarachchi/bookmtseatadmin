@@ -2,7 +2,9 @@ package com.hash.bookmyseatadmin.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +31,7 @@ public class MyEventsActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private ImageView btnBack;
     private MaterialButton btnCreateEvent;
+    private ProgressBar progressBar;
     private String currentAdminUid;
     private boolean isSuperAdmin = false;
 
@@ -56,6 +59,7 @@ public class MyEventsActivity extends AppCompatActivity {
         rvEvents = findViewById(R.id.rvEvents);
         btnBack = findViewById(R.id.btnBack);
         btnCreateEvent = findViewById(R.id.btnCreateEvent);
+        progressBar = findViewById(R.id.progressBar);
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -64,13 +68,58 @@ public class MyEventsActivity extends AppCompatActivity {
         });
 
         rvEvents.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new EventsAdapter(eventList, event -> {
-            Toast.makeText(this, "Event: " + event.getTitle(), Toast.LENGTH_SHORT).show();
+
+        // ✅ Updated adapter with all three click handlers
+        adapter = new EventsAdapter(eventList, new EventsAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Event event) {
+                // View event details (optional)
+                Toast.makeText(MyEventsActivity.this, "Event: " + event.getTitle(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onEditClick(Event event) {
+                // Navigate to Edit Event screen
+                Intent intent = new Intent(MyEventsActivity.this, EditEventActivity.class);
+                intent.putExtra("eventId", event.getEventId());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onDeleteClick(Event event) {
+                // Show delete confirmation
+                showDeleteConfirmation(event);
+            }
         });
         rvEvents.setAdapter(adapter);
     }
 
+    private void showDeleteConfirmation(Event event) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Delete Event")
+                .setMessage("Are you sure you want to delete \"" + event.getTitle() + "\"? This action cannot be undone.")
+                .setPositiveButton("Delete", (dialog, which) -> deleteEvent(event))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void deleteEvent(Event event) {
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+
+        db.collection("events").document(event.getEventId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Event deleted successfully", Toast.LENGTH_SHORT).show();
+                    checkAdminRoleAndLoadEvents(); // Refresh list
+                })
+                .addOnFailureListener(e -> {
+                    if (progressBar != null) progressBar.setVisibility(View.GONE);
+                    Toast.makeText(this, "Delete failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
     private void checkAdminRoleAndLoadEvents() {
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
 
         String email = mAuth.getCurrentUser().getEmail();
 
@@ -83,7 +132,6 @@ public class MyEventsActivity extends AppCompatActivity {
             loadAllEvents();
             return;
         }
-
 
         db.collection("admins")
                 .whereEqualTo("email", email)
@@ -103,11 +151,12 @@ public class MyEventsActivity extends AppCompatActivity {
     }
 
     private void loadAllEvents() {
-        // Super Admin - load ALL events
         db.collection("events")
                 .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(task -> {
+                    if (progressBar != null) progressBar.setVisibility(View.GONE);
+
                     if (task.isSuccessful()) {
                         eventList.clear();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
@@ -123,11 +172,12 @@ public class MyEventsActivity extends AppCompatActivity {
     }
 
     private void loadMyEvents() {
-
         db.collection("events")
                 .whereEqualTo("createdBy", currentAdminUid)
                 .get()
                 .addOnCompleteListener(task -> {
+                    if (progressBar != null) progressBar.setVisibility(View.GONE);
+
                     if (task.isSuccessful()) {
                         eventList.clear();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
@@ -144,5 +194,11 @@ public class MyEventsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Failed to load events", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkAdminRoleAndLoadEvents();
     }
 }
